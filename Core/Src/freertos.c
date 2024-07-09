@@ -72,6 +72,18 @@ const osThreadAttr_t TCPServerTask_attributes = {
   .stack_size = sizeof(TCPServerTaskBuffer),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for ModuleCtrlTask */
+osThreadId_t ModuleCtrlTaskHandle;
+uint32_t ModuleCtrlTaskBuffer[ 1024 ];
+osStaticThreadDef_t ModuleCtrlTaskControlBlock;
+const osThreadAttr_t ModuleCtrlTask_attributes = {
+  .name = "ModuleCtrlTask",
+  .cb_mem = &ModuleCtrlTaskControlBlock,
+  .cb_size = sizeof(ModuleCtrlTaskControlBlock),
+  .stack_mem = &ModuleCtrlTaskBuffer[0],
+  .stack_size = sizeof(ModuleCtrlTaskBuffer),
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -80,6 +92,7 @@ const osThreadAttr_t TCPServerTask_attributes = {
 
 void DefaultTaskFcn(void *argument);
 void TCPServerTaskFcn(void *argument);
+extern void IoModuleControlTaskFcn(void *argument);
 
 extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -116,6 +129,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of TCPServerTask */
   TCPServerTaskHandle = osThreadNew(TCPServerTaskFcn, NULL, &TCPServerTask_attributes);
+
+  /* creation of ModuleCtrlTask */
+  ModuleCtrlTaskHandle = osThreadNew(IoModuleControlTaskFcn, NULL, &ModuleCtrlTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

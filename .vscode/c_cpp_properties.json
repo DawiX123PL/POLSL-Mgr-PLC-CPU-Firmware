@@ -1,0 +1,72 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Core/Inc/**",
+                "${workspaceFolder}/PLC_module/**",
+                "${workspaceFolder}/Drivers/STM32F0xx_HAL_Driver/Inc/**",
+                "${workspaceFolder}/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy/**",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F0xx/Include/**",
+                "${workspaceFolder}/Drivers/CMSIS/Include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "D:/ProgramFiles/ARM_toolchain/GCC/bin/arm-none-eabi-gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        },
+        {
+            "name": "arm_none_eabi",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/Core/Inc",
+                "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Drivers/CMSIS/Include",
+                "${workspaceFolder}/LWIP/App",
+                "${workspaceFolder}/LWIP/Target",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/system",
+                "${workspaceFolder}/Drivers/BSP/Components/lan8742",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/netif/ppp",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/lwip",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/lwip/apps",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/lwip/priv",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/lwip/prot",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/netif",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/compat/posix",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/compat/posix/arpa",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/compat/posix/net",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/compat/posix/sys",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/src/include/compat/stdc",
+                "${workspaceFolder}/Middlewares/Third_Party/LwIP/system/arch",
+                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/include",
+                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+                "${workspaceFolder}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+                "${workspaceFolder}/PLC"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "DEBUG",
+                "USE_HAL_DRIVER",
+                "STM32F429xx"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "D:\\ProgramFiles\\ARM_toolchain\\GCC\\bin\\arm-none-eabi-g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

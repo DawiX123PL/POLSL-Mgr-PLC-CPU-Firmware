@@ -1,3 +1,21 @@
 {
-    "autoHide.autoHideSideBar": false
+    "autoHide.autoHideSideBar": false,
+    "C_Cpp.default.includePath": [
+        "Core/Inc",
+        "PLC_module",
+        "Drivers/STM32F0xx_HAL_Driver/Inc",
+        "Drivers/STM32F0xx_HAL_Driver/Inc/Legacy",
+        "Drivers/CMSIS/Device/ST/STM32F0xx/Include",
+        "Drivers/CMSIS/Include"
+    ],
+    "files.associations": {
+        "*.m": "matlab",
+        "*.h": "c",
+        "*.json": "jsonc",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp",
+        "vector": "cpp"
+    }
 }
