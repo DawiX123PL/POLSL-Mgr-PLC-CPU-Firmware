@@ -58,7 +58,7 @@ const osThreadAttr_t DefaultTask_attributes = {
   .cb_size = sizeof(SystemInitTaskControlBlock),
   .stack_mem = &SystemInitTaskBuffer[0],
   .stack_size = sizeof(SystemInitTaskBuffer),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for TCPServerTask */
 osThreadId_t TCPServerTaskHandle;
@@ -70,7 +70,7 @@ const osThreadAttr_t TCPServerTask_attributes = {
   .cb_size = sizeof(TCPServerTaskControlBlock),
   .stack_mem = &TCPServerTaskBuffer[0],
   .stack_size = sizeof(TCPServerTaskBuffer),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for ModuleCtrlTask */
 osThreadId_t ModuleCtrlTaskHandle;
@@ -82,7 +82,7 @@ const osThreadAttr_t ModuleCtrlTask_attributes = {
   .cb_size = sizeof(ModuleCtrlTaskControlBlock),
   .stack_mem = &ModuleCtrlTaskBuffer[0],
   .stack_size = sizeof(ModuleCtrlTaskBuffer),
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityRealtime7,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,6 +96,25 @@ extern void IoModuleControlTaskFcn(void *argument);
 
 extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* Hook prototypes */
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
+
+int overflow = 0;
+signed char *overflow_pcTaskName = 0;
+xTaskHandle overflow_xTask;
+
+/* USER CODE BEGIN 4 */
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+	overflow = 1;
+	overflow_pcTaskName = pcTaskName;
+	overflow_xTask = xTask;
+}
+/* USER CODE END 4 */
 
 /**
   * @brief  FreeRTOS initialization
