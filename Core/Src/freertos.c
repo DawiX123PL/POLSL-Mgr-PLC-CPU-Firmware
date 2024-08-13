@@ -100,11 +100,12 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 /* Hook prototypes */
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 
+/* USER CODE BEGIN 4 */
+
 int overflow = 0;
 signed char *overflow_pcTaskName = 0;
 xTaskHandle overflow_xTask;
 
-/* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
    /* Run time stack overflow checking is performed if

@@ -41,7 +41,8 @@
 #define TIME_WAITING_FOR_INPUT ( portMAX_DELAY )
 /* USER CODE BEGIN OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Stack size of the interface thread */
-#define INTERFACE_THREAD_STACK_SIZE ( 350 )
+// #define INTERFACE_THREAD_STACK_SIZE ( 350 ) default
+#define INTERFACE_THREAD_STACK_SIZE ( 2048 )
 /* USER CODE END OS_THREAD_STACK_SIZE_WITH_RTOS */
 /* Network interface name */
 #define IFNAME0 's'
@@ -253,7 +254,7 @@ static void low_level_init(struct netif *netif)
 /* USER CODE BEGIN OS_THREAD_NEW_CMSIS_RTOS_V2 */
   memset(&attributes, 0x0, sizeof(osThreadAttr_t));
   attributes.name = "EthIf";
-  attributes.stack_size = INTERFACE_THREAD_STACK_SIZE * 3;
+  attributes.stack_size = INTERFACE_THREAD_STACK_SIZE;
   attributes.priority = osPriorityRealtime;
   osThreadNew(ethernetif_input, netif, &attributes);
 /* USER CODE END OS_THREAD_NEW_CMSIS_RTOS_V2 */
@@ -407,9 +408,7 @@ static struct pbuf * low_level_input(struct netif *netif)
 
   if(RxAllocStatus == RX_ALLOC_OK)
   {
-    // LOCK_TCPIP_CORE();
     HAL_ETH_ReadData(&heth, (void **)&p);
-    // UNLOCK_TCPIP_CORE();
   }
 
   return p;
@@ -435,7 +434,6 @@ void ethernetif_input(void* argument)
     {
       do
       {
-      //  LOCK_TCPIP_CORE();
         p = low_level_input( netif );
         if (p != NULL)
         {
@@ -444,7 +442,6 @@ void ethernetif_input(void* argument)
             pbuf_free(p);
           }
         }
-//        UNLOCK_TCPIP_CORE();
       } while(p!=NULL);
     }
   }
