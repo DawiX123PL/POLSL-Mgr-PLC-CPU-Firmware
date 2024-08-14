@@ -26,8 +26,7 @@
             "name": "arm_none_eabi",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/nlohmann_json/include",
-                "C:/boost/include/boost-1_85",
+                "${workspaceFolder}/boost_1_85",
                 "${workspaceFolder}/Core/Inc",
                 "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc",
                 "${workspaceFolder}/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",

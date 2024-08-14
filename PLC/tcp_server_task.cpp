@@ -7,38 +7,59 @@
 #include "lwip/sockets.h"
 #include "static_buffer.hpp"
 
+#include "tcp_command_handlers.hpp"
 
-
-
-StaticBuffer<char, 1024> tcp_command;
+DataFrame rx_data_frame;
+DataFrame tx_data_frame;
 
 void HandleCommand(int client_socket)
 {
-    DataFrame data_frame;
-    DataFrame response_frame;
-    response_frame.Clear();
 
-    data_frame.Parse(tcp_command.Get(), tcp_command.Size());
+    tx_data_frame.Clear();
+
+    bool is_ok = rx_data_frame.Parse();
+
+    if (!is_ok)
+    {
+        tx_data_frame.Clear();
+        tx_data_frame.Push("PARSING_ERROR");
+        tx_data_frame.Push("ERROR");
+
+        // send response
+        std::string_view resp = tx_data_frame.BufferGet();
+        write(client_socket, resp.begin(), resp.size());
+        return;
+    }
 
     // first element of frame must be command name
-    response_frame[0] = data_frame[0];
+    tx_data_frame.Clear();
+    tx_data_frame.Push(rx_data_frame[0].Get<std::string_view>());
 
-    if (data_frame[0].Get<std::string_view>() == "PING")
+    std::string_view command = rx_data_frame[0].Get<std::string_view>();
+    if (command == "PING")
     {
-        response_frame[1].Set("OK");
-        std::string resp = response_frame.ToString();
-        write(client_socket, resp.c_str(), resp.size());
-        return;
+        TcpCommandHandle::Ping(rx_data_frame, tx_data_frame);
+    }
+    else if (command == "START")
+    {
+        TcpCommandHandle::Start(rx_data_frame, tx_data_frame);
+    }
+    else if (command == "STOP")
+    {
+        TcpCommandHandle::Start(rx_data_frame, tx_data_frame);
+    }
+    else if (command == "PROGMEM")
+    {
+        TcpCommandHandle::ProgMem(rx_data_frame, tx_data_frame);
+    }
+    else
+    {
+        TcpCommandHandle::UnnownCommand(rx_data_frame, tx_data_frame);
     }
 
-    // error case 
-    {
-        response_frame[1].Set("ERROR");
-        response_frame[2].Set("Unnown command");
-        std::string resp = response_frame.ToString();
-        write(client_socket, resp.c_str(), resp.size());
-        return;
-    }
+    // send response
+    std::string_view resp = tx_data_frame.BufferGet();
+    write(client_socket, resp.begin(), resp.size());
 }
 
 void HandleConnectionLoop(int client_socket)
@@ -59,19 +80,19 @@ void HandleConnectionLoop(int client_socket)
         // push data to buffer
         for (int i = 0; i < data_count; i++)
         {
-            if (tcp_command.Full())
+            if (rx_data_frame.BufferFull())
                 break;
 
-            tcp_command.PushBack(buffer[i]);
+            rx_data_frame.BufferPush(buffer[i]);
             if (buffer[i] == '\n')
             {
                 HandleCommand(client_socket);
-                tcp_command.Clear();
+                rx_data_frame.Clear();
             }
         }
 
         // check for buffer overflow
-        if (tcp_command.Full())
+        if (rx_data_frame.BufferFull())
         {
             // disconnect
             close(client_socket);

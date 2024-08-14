@@ -1,7 +1,7 @@
 #include "plc_spi.hpp"
 
 // return CS port for specified module number
-GPIO_TypeDef *ModulePort(int module_id)
+static GPIO_TypeDef *ModulePort(int module_id)
 {
     switch (module_id)
     {
@@ -24,7 +24,7 @@ GPIO_TypeDef *ModulePort(int module_id)
 }
 
 // return CS pin for specified module number
-uint16_t ModulePin(int module_id)
+static uint16_t ModulePin(int module_id)
 {
     switch (module_id)
     {
@@ -48,30 +48,30 @@ uint16_t ModulePin(int module_id)
 
 // 1 (true) - module selected
 // 0 (false) - module not selected
-void SelectModuleEx(int module_id, bool select)
+static void SelectModuleEx(int module_id, bool select)
 {
     GPIO_PinState pin_state = select ? GPIO_PIN_RESET : GPIO_PIN_SET;
     HAL_GPIO_WritePin(ModulePort(module_id), ModulePin(module_id), pin_state);
 }
 
-void SelectModule(int module_id)
+void SpiSelect(int module_id)
 {
     SelectModuleEx(module_id, true);
 }
 
-void DeselectModule(int module_id)
+void SpiDeselect(int module_id)
 {
     SelectModuleEx(module_id, false);
 }
 
 // deselets all io modules
-void DeselectAllModules()
-{
-    for (int i = 0; i < max_io_modules; i++)
-    {
-        SelectModuleEx(i, false);
-    }
-}
+// void SpiDeselectAll()
+// {
+//     for (int i = 0; i < max_io_modules; i++)
+//     {
+//         SelectModuleEx(i, false);
+//     }
+// }
 
 // transmit and receive data from io module
 void SpiTransmitReceive(uint8_t *tx_data, uint8_t *rx_data, int frame_size)
