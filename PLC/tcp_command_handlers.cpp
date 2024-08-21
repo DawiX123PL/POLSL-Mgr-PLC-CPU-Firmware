@@ -4,6 +4,14 @@
 #include <algorithm>
 #include "plc_user_code.hpp"
 #include "plc_crc.hpp"
+#include "plc_status.hpp"
+
+extern osEventFlagsId_t plc_status_flagHandle;
+
+bool IsFlagError(uint32_t flag)
+{
+    return (flag & osFlagsError) != 0;
+}
 
 namespace TcpCommandHandle
 {
@@ -20,12 +28,43 @@ namespace TcpCommandHandle
 
     void Start(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
     {
-        tx_data_frame.Push("OK");
+        uint32_t flag = osEventFlagsSet(plc_status_flagHandle, PlcRequestFlags::RUN);
+        // check for error
+        if (IsFlagError(flag))
+        {
+            tx_data_frame.Push("ERROR");
+        }
+        else
+        {
+            tx_data_frame.Push("OK");
+        }
     }
 
     void Stop(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
     {
-        tx_data_frame.Push("OK");
+        uint32_t flag = osEventFlagsSet(plc_status_flagHandle, PlcRequestFlags::STOP);
+        // check for error
+        if (IsFlagError(flag))
+        {
+            tx_data_frame.Push("ERROR");
+        }
+        else
+        {
+            tx_data_frame.Push("OK");
+        }
+    }
+
+    void Status(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
+    {
+        // if flag is not 0 that means plc is still processing request
+        uint32_t flag = osEventFlagsGet(plc_status_flagHandle);
+        if(flag)
+        {
+            tx_data_frame.Push("WAIT");
+            return;
+        }
+
+        
     }
 
     void ProgMem(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
@@ -51,13 +90,9 @@ namespace TcpCommandHandle
 
     void ProgMemVerify(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
     {
-        CodeBlock *code_block = (CodeBlock *)program_memory.data();
-        CodeBlockData *code_block_data = &code_block->code;
-
-        uint32_t crc = code_block->crc;
-        uint32_t crc_calculated = Crc32CalculateSoft((uint8_t *)code_block_data, sizeof(CodeBlockData));
-
-        if (crc == crc_calculated)
+        uint32_t code_crc;
+        uint32_t calculated_crc;
+        if (program_memory.Verify(&code_crc, &calculated_crc))
         {
             tx_data_frame.Push("OK");
             return;
@@ -66,8 +101,8 @@ namespace TcpCommandHandle
         {
             tx_data_frame.Push("ERROR");
             tx_data_frame.Push("CRC Mismatch");
-            tx_data_frame.Push(crc);
-            tx_data_frame.Push(crc_calculated);
+            tx_data_frame.Push(code_crc);
+            tx_data_frame.Push(calculated_crc);
             return;
         }
     }
@@ -91,12 +126,23 @@ namespace TcpCommandHandle
             return;
         }
 
-        uint8_t *mem_ptr = &program_memory[address];
+        osStatus_t os_status = osMutexAcquire(program_memory_write_mutHandle, 0);
+
+        if (os_status != osOK)
+        {
+            tx_data_frame.Push("ERROR");
+            tx_data_frame.Push("Cannot Access PROGMEM");
+            return;
+        }
+
+        uint8_t *mem_ptr = program_memory.begin() + address;
         uint8_t *mem_end = program_memory.end();
         uint32_t mem_count = mem_end - mem_ptr;
 
         uint32_t readed_bytes;
         bool is_hex_ok = rx_data_frame[3].GetHex(mem_ptr, mem_count, &readed_bytes);
+
+        os_status = osMutexRelease(program_memory_write_mutHandle);
 
         if (!is_hex_ok)
         {
@@ -145,7 +191,7 @@ namespace TcpCommandHandle
             return;
         }
 
-        uint8_t *begin = program_memory.begin() + address;
+        uint8_t *begin = program_memory.data() + address;
         uint32_t available_space_in_mem = program_memory.end() - begin;
         uint32_t count = std::min(available_space_in_mem, size);
 
@@ -156,10 +202,21 @@ namespace TcpCommandHandle
     void ProgMemClear(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
     {
 
+        osStatus_t os_status = osMutexAcquire(program_memory_write_mutHandle, 0);
+
+        if (os_status != osOK)
+        {
+            tx_data_frame.Push("ERROR");
+            tx_data_frame.Push("Cannot Access PROGMEM");
+            return;
+        }
+
         for (uint8_t &mem : program_memory)
         {
             mem = 0;
         }
+
+        os_status = osMutexRelease(program_memory_write_mutHandle);
 
         tx_data_frame.Push("OK");
     }

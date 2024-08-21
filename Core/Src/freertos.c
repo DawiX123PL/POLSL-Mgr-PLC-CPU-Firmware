@@ -30,6 +30,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticSemaphore_t osStaticMutexDef_t;
+typedef StaticEventGroup_t osStaticEventGroupDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -84,6 +86,22 @@ const osThreadAttr_t ModuleCtrlTask_attributes = {
   .stack_size = sizeof(ModuleCtrlTaskBuffer),
   .priority = (osPriority_t) osPriorityRealtime7,
 };
+/* Definitions for program_memory_write_mut */
+osMutexId_t program_memory_write_mutHandle;
+osStaticMutexDef_t program_memory_write_mut_cb;
+const osMutexAttr_t program_memory_write_mut_attributes = {
+  .name = "program_memory_write_mut",
+  .cb_mem = &program_memory_write_mut_cb,
+  .cb_size = sizeof(program_memory_write_mut_cb),
+};
+/* Definitions for plc_status_flag */
+osEventFlagsId_t plc_status_flagHandle;
+osStaticEventGroupDef_t plc_status_flagControlBlock;
+const osEventFlagsAttr_t plc_status_flag_attributes = {
+  .name = "plc_status_flag",
+  .cb_mem = &plc_status_flagControlBlock,
+  .cb_size = sizeof(plc_status_flagControlBlock),
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -126,6 +144,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
+  /* Create the mutex(es) */
+  /* creation of program_memory_write_mut */
+  program_memory_write_mutHandle = osMutexNew(&program_memory_write_mut_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -156,6 +177,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* creation of plc_status_flag */
+  plc_status_flagHandle = osEventFlagsNew(&plc_status_flag_attributes);
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */

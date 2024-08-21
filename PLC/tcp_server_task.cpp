@@ -46,7 +46,7 @@ void HandleCommand(int client_socket)
     }
     else if (command == "STOP")
     {
-        TcpCommandHandle::Start(rx_data_frame, tx_data_frame);
+        TcpCommandHandle::Stop(rx_data_frame, tx_data_frame);
     }
     else if (command == "PROGMEM")
     {

@@ -11,13 +11,6 @@ extern "C"
 
     constexpr int bytes_per_module = 32;
 
-    struct GlobalMem
-    {
-        uint8_t input[bytes_per_module * max_io_modules];  // %Ix.x
-        uint8_t output[bytes_per_module * max_io_modules]; // %Qx.x
-        uint8_t memory[bytes_per_module * max_io_modules]; // %Mx.x
-    };
-
     enum class DeviceID : uint8_t
     {
         UNNOWN = 0,
@@ -58,7 +51,9 @@ extern "C"
 }
 
 bool IOmoduleRead(IOModule *module, int module_id);
+void IOmoduleWrite(IOModule *module, int module_id);
 void IOModuleClearError(IOModule *module, int module_id);
-void IOmoduleUpdate(IOModule *module, int module_id);
+bool IOmoduleUpdate(IOModule *module, int module_id);
 void IOmoduleReadAll(IOModule *module, int count);
 void IOmoduleUpdateAll(IOModule *module, int count);
+void IOmoduleClearErrorAll(IOModule *module, int count);

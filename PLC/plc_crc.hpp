@@ -25,6 +25,16 @@ uint8_t Crc8CalculateHard(uint8_t *buffer, uint32_t size);
 uint32_t Crc32CalculateHard(uint8_t *buffer, uint32_t size);
 
 // Calculate CRC using software only
+// # (Thread safe)
+//
+// Polynomial       - 0x4C11DB7
+// Initial value    - 0xFFFFFFFF
+// Final XOR        - 0x0
+// Input Reflected  - NOPE
+// Output Reflected - NOPE
+uint8_t Crc8CalculateSoft(uint8_t *data, uint32_t size);
+
+// Calculate CRC using software only
 // # Thread safe
 //
 // Polynomial       - 0x4C11DB7

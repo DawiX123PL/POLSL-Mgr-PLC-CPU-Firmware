@@ -85,6 +85,30 @@ uint32_t Crc32CalculateHard(uint8_t *buffer, uint32_t size)
 // Final XOR        - 0x0
 // Input Reflected  - NOPE
 // Output Reflected - NOPE
+uint8_t Crc8CalculateSoft(uint8_t *data, uint32_t size)
+{
+    constexpr uint32_t bytes = 32;
+    constexpr uint32_t polynomial = 0x4C11DB7;
+    constexpr uint32_t init_val = 0xFFFFFFFF;
+    constexpr uint32_t final_xor = 0x0;
+    constexpr bool input_reflected  = false;
+    constexpr bool output_reflected = false;
+
+    boost::crc_optimal<bytes, polynomial, init_val, final_xor, input_reflected, output_reflected> crc;
+
+    crc.process_bytes(data, size);
+    uint32_t checksum = crc.checksum();
+    return checksum;
+}
+
+// Calculate CRC using software only
+// # (Thread safe)
+//
+// Polynomial       - 0x4C11DB7
+// Initial value    - 0xFFFFFFFF
+// Final XOR        - 0x0
+// Input Reflected  - NOPE
+// Output Reflected - NOPE
 uint32_t Crc32CalculateSoft(uint8_t *data, uint32_t size)
 {
     constexpr uint32_t bytes = 32;
@@ -111,7 +135,7 @@ bool Crc8Verify(uint8_t *buffer, uint32_t size)
 {
     assert_param(size != 0);
     uint8_t calculated_crc = Crc8CalculateHard(buffer, size - 1);
-    uint8_t frame_crc = buffer[size];
+    uint8_t frame_crc = buffer[size - 1];
 
     return calculated_crc == frame_crc;
 }
