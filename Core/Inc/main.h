@@ -58,6 +58,7 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define hspi_module hspi1
+#define htim_performance htim14
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
@@ -68,6 +69,10 @@ void Error_Handler(void);
 #define RMII_REF_CLK_GPIO_Port GPIOA
 #define RMII_MDIO_Pin GPIO_PIN_2
 #define RMII_MDIO_GPIO_Port GPIOA
+#define MODULE_CS2_Pin GPIO_PIN_5
+#define MODULE_CS2_GPIO_Port GPIOA
+#define MODULE_CS0_Pin GPIO_PIN_6
+#define MODULE_CS0_GPIO_Port GPIOA
 #define RMII_CRS_DV_Pin GPIO_PIN_7
 #define RMII_CRS_DV_GPIO_Port GPIOA
 #define RMII_RXD0_Pin GPIO_PIN_4
@@ -76,16 +81,10 @@ void Error_Handler(void);
 #define RMII_RXD1_GPIO_Port GPIOC
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
-#define MODULE_CS0_Pin GPIO_PIN_13
-#define MODULE_CS0_GPIO_Port GPIOF
-#define MODULE_CS3_Pin GPIO_PIN_14
-#define MODULE_CS3_GPIO_Port GPIOF
-#define MODULE_CS1_Pin GPIO_PIN_9
-#define MODULE_CS1_GPIO_Port GPIOE
-#define MODULE_CS2_Pin GPIO_PIN_11
-#define MODULE_CS2_GPIO_Port GPIOE
-#define MODULE_CS4_Pin GPIO_PIN_13
-#define MODULE_CS4_GPIO_Port GPIOE
+#define MODULE_CS1_Pin GPIO_PIN_11
+#define MODULE_CS1_GPIO_Port GPIOB
+#define MODULE_CS3_Pin GPIO_PIN_12
+#define MODULE_CS3_GPIO_Port GPIOB
 #define RMII_TXD1_Pin GPIO_PIN_13
 #define RMII_TXD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
@@ -98,6 +97,12 @@ void Error_Handler(void);
 #define USB_PowerSwitchOn_GPIO_Port GPIOG
 #define USB_OverCurrent_Pin GPIO_PIN_7
 #define USB_OverCurrent_GPIO_Port GPIOG
+#define MODULE_CS5_Pin GPIO_PIN_6
+#define MODULE_CS5_GPIO_Port GPIOC
+#define MODULE_CS7_Pin GPIO_PIN_8
+#define MODULE_CS7_GPIO_Port GPIOC
+#define MODULE_CS8_Pin GPIO_PIN_9
+#define MODULE_CS8_GPIO_Port GPIOC
 #define USB_SOF_Pin GPIO_PIN_8
 #define USB_SOF_GPIO_Port GPIOA
 #define USB_VBUS_Pin GPIO_PIN_9
@@ -118,6 +123,10 @@ void Error_Handler(void);
 #define RMII_TXD0_GPIO_Port GPIOG
 #define LD2_Pin GPIO_PIN_7
 #define LD2_GPIO_Port GPIOB
+#define MODULE_CS6_Pin GPIO_PIN_8
+#define MODULE_CS6_GPIO_Port GPIOB
+#define MODULE_CS4_Pin GPIO_PIN_9
+#define MODULE_CS4_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

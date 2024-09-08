@@ -78,7 +78,7 @@ extern "C"
     struct GlobalMem
     {
     	static constexpr int max_io_modules = 5;
-    	static constexpr int bytes_per_module = 5;
+    	static constexpr int bytes_per_module = 64;
     	static constexpr int memory_size = 1024;
 
         uint8_t input[max_io_modules][bytes_per_module];  // %Ix.x.x

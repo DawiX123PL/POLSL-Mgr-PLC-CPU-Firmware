@@ -25,7 +25,7 @@ std::array<uint8_t, 90> program_local_memory;
 // Global Program memory
 GlobalMem global_program_memory;
 
-// modules 
+// modules
 IOModule io_modules[max_io_modules] = {};
 
 extern osEventFlagsId_t plc_status_flagHandle;
@@ -98,14 +98,45 @@ void RunProgram(bool first_scan)
     }
 
     // execute user code
-    if(first_scan)
+    if (first_scan)
     {
         program_local_memory.fill(0xAA);
         main_prog_init(&global_program_memory, program_local_memory.data());
     }
 
     main_prog(&global_program_memory, program_local_memory.data());
-    
+}
+
+void CopyInputToGlobalMemory()
+{
+    for(int mod_nr = 0; mod_nr < max_io_modules; mod_nr ++)
+    {
+        uint16_t* ptr = (uint16_t* )global_program_memory.input[mod_nr];
+        *ptr++ = io_modules[mod_nr].module_state.digital_input;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input0;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input1;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input2;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input3;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input4;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input5;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input6;
+        *ptr++ = io_modules[mod_nr].module_state.analog_input7;
+        *ptr++ = io_modules[mod_nr].module_state.supply_voltage;
+
+        assert_param((ptr - (uint16_t*)global_program_memory.input[mod_nr]) < bytes_per_module);
+    }
+}
+
+void CopyOutputFromGlobalMemory()
+{
+    for(int mod_nr = 0; mod_nr < max_io_modules; mod_nr ++)
+    {
+        uint8_t* ptr = (uint8_t* )global_program_memory.output[mod_nr];
+        io_modules[mod_nr].module_state.digital_output_level = *ptr++;
+        io_modules[mod_nr].module_state.digital_output_enable = *ptr++;
+
+        assert_param((ptr - (uint8_t*)global_program_memory.output[mod_nr]) < bytes_per_module);
+    }
 }
 
 extern "C" void
@@ -119,9 +150,11 @@ IoModuleControlTaskFcn(void *argument)
         SpiDeselect(i);
     }
 
-    osDelay(100); //wait for modules to startup
+    osDelay(100); // wait for modules to startup
 
-   	IOmoduleClearErrorAll(io_modules,  max_io_modules);
+    for(int i = 0; i < 10; i ++){
+    	IOmoduleClearErrorAll(io_modules, max_io_modules);
+    }
 
     osDelay(10);
 
@@ -131,7 +164,11 @@ IoModuleControlTaskFcn(void *argument)
 
     while (true)
     {
+    	uint32_t start = HAL_GetTick();
+
         IOmoduleUpdateAll(io_modules, max_io_modules);
+
+        uint32_t module_update_time = HAL_GetTick() - start;
 
         if (plc_status == PlcStatus::STARTING)
         {
@@ -147,9 +184,13 @@ IoModuleControlTaskFcn(void *argument)
 
         if (plc_status == PlcStatus::RUN)
         {
+            CopyInputToGlobalMemory();
             RunProgram(first_scan);
+            CopyOutputFromGlobalMemory();
             first_scan = false;
         }
+
+        uint32_t run_time = HAL_GetTick() - start;
 
         // get requests to start or stop
         HandleStartStopRequest();
