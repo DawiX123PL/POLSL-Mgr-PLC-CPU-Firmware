@@ -13,5 +13,5 @@ namespace TcpCommandHandle
     void ProgMemRead(const DataFrame& rx_data_frame, DataFrame &tx_data_frame);
     void ProgMemClear(const DataFrame& rx_data_frame, DataFrame &tx_data_frame);
     void ProgMemVerify(const DataFrame &rx_data_frame, DataFrame &tx_data_frame);
-
+    void Performance(const DataFrame &rx_data_frame, DataFrame &tx_data_frame);
 }

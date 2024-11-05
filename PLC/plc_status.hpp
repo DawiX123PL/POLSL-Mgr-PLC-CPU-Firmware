@@ -15,6 +15,3 @@ enum class PlcStatus
     STARTING, // intemediate between start and stop
     STOPING, // intemediate between start and stop
 };
-
-
-

@@ -5,6 +5,8 @@
 #include "plc_user_code.hpp"
 #include "plc_crc.hpp"
 #include "plc_status.hpp"
+#include "performance.hpp"
+#include <float.h>
 
 extern osEventFlagsId_t plc_status_flagHandle;
 
@@ -58,13 +60,11 @@ namespace TcpCommandHandle
     {
         // if flag is not 0 that means plc is still processing request
         uint32_t flag = osEventFlagsGet(plc_status_flagHandle);
-        if(flag)
+        if (flag)
         {
             tx_data_frame.Push("WAIT");
             return;
         }
-
-        
     }
 
     void ProgMem(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
@@ -219,6 +219,32 @@ namespace TcpCommandHandle
         os_status = osMutexRelease(program_memory_write_mutHandle);
 
         tx_data_frame.Push("OK");
+    }
+
+    template <uint32_t N>
+    static void PushTimeToFrame(DataFrame &tx_data_frame, Performance::Time<N>& timer, const char *const label)
+    {
+        constexpr uint32_t buff_size = 100;
+        char buff[buff_size];
+
+        Performance::Metrics time;
+        time = timer.GetMetrics();
+
+        snprintf(buff, buff_size, "%s c:%d m:%.9g v:%.9g", label, time.count, time.mean, time.variance);
+        tx_data_frame.Push((const char *const)buff);
+    }
+
+    void Performance(const DataFrame &rx_data_frame, DataFrame &tx_data_frame)
+    {
+
+        tx_data_frame.Push("OK");
+
+        PushTimeToFrame(tx_data_frame, Performance::module_update_time, "MOD_UPDATE");
+        PushTimeToFrame(tx_data_frame, Performance::program_execution_time, "EXEC");
+        PushTimeToFrame(tx_data_frame, Performance::program_first_scan_time, "EXEC_FS");
+        PushTimeToFrame(tx_data_frame, Performance::start_sequence_time, "START_SEQ");
+        PushTimeToFrame(tx_data_frame, Performance::stop_sequence_time, "STOP_SEQ");
+        PushTimeToFrame(tx_data_frame, Performance::requests_time, "REQ");
     }
 
 }

@@ -52,6 +52,10 @@ void HandleCommand(int client_socket)
     {
         TcpCommandHandle::ProgMem(rx_data_frame, tx_data_frame);
     }
+    else if (command == "PERFORMANCE")
+    {
+        TcpCommandHandle::Performance(rx_data_frame, tx_data_frame);
+    }
     else
     {
         TcpCommandHandle::UnnownCommand(rx_data_frame, tx_data_frame);

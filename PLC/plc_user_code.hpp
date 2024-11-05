@@ -6,8 +6,8 @@
 
 extern "C"
 {
-    constexpr uint32_t user_code_bin_size = 20 * 1024; // program memory - 20kB
-    constexpr uint32_t modules_count = 64;             // program memory - 20kB
+    constexpr uint32_t user_code_bin_size = 40 * 1024; // program memory - 40kB
+    constexpr uint32_t modules_count = 64;             // program memory - 40kB
 
     typedef void (*ProgramPtr)(void *, void *);
     typedef void (*ProgramInitPtr)(void *, void *);
